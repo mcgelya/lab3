@@ -177,9 +177,12 @@ public:
 
     void VisualizeChunks() const {
         std::vector<std::string> v(bufferSize, "--");
-        for (int i = start, ind = 0; i != end; i = Next(i), ++ind) {
+        int i = start, ind = 0;
+        do {
             v[i] = std::to_string(Get(ind));
-        }
+            i = Next(i);
+            ++ind;
+        } while (i != end);
 
         std::cout << "[ ";
         for (const std::string& s : v) {

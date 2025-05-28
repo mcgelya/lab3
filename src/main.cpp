@@ -15,6 +15,7 @@ int main() {
         std::string c;
         std::getline(std::cin, c);
         if (c == "1" || c == "3") {
+            std::cout << "Input a number: ";
             std::string s;
             std::getline(std::cin, s);
             long long x = 0;
