@@ -194,9 +194,12 @@ public:
 
     void VisualizeMap() const {
         std::vector<std::string> v(bufferSize, "--");
-        for (int i = start, ind = 0; i != end; i = Next(i), ++ind) {
+        int i = start, ind = 0;
+        do {
             v[i] = "Chunk " + std::to_string(ind);
-        }
+            i = Next(i);
+            ++ind;
+        } while (i != end);
 
         std::cout << "[ ";
         for (const std::string& s : v) {
