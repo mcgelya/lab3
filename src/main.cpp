@@ -29,33 +29,31 @@ int getInteger(int& ok, int l = INT_MIN, int r = INT_MAX) {
 
 int main() {
     int b, c;
-    while (true) {
+    {
         std::cout << "Enter bufferSize of deque: ";
         int ok = 0;
         b = getInteger(ok, 1, 100);
         if (ok == 1) {
-            std::cout << "\nNot a number!" << std::endl;
-            continue;
+            std::cout << "\nNot a number! Setting bufferSize to 5." << std::endl;
+            b = 5;
         }
         if (ok == 2) {
-            std::cout << "\nNumber is too large!" << std::endl;
-            continue;
+            std::cout << "\nNumber is too large! Setting bufferSize to 5." << std::endl;
+            b = 5;
         }
-        break;
     }
-    while (true) {
+    {
         std::cout << "Enter chunkSize of deque: ";
         int ok = 0;
         c = getInteger(ok, 1, 100);
         if (ok == 1) {
-            std::cout << "\nNot a number!" << std::endl;
-            continue;
+            std::cout << "\nNot a number! Setting chunkSize to 5." << std::endl;
+            c = 5;
         }
         if (ok == 2) {
-            std::cout << "\nNumber is too large!" << std::endl;
-            continue;
+            std::cout << "\nNumber is too large! Setting chunkSize to 5." << std::endl;
+            c = 5;
         }
-        break;
     }
     Deque<int> d(0, b, c);
     while (true) {
