@@ -33,7 +33,7 @@ TEST_CASE("Test RingBuffer") {
 }
 
 TEST_CASE("Test Deque") {
-    Deque<int, 5, 2> d;
+    Deque<int> d(0, 5, 2);
 
     d.PushBack(1);
     d.PushFront(2);
@@ -53,7 +53,7 @@ TEST_CASE("Test Deque") {
 }
 
 TEST_CASE("Test Deque with start size") {
-    Deque<int, 5, 2> d(3);
+    Deque<int> d(3, 5, 2);
     REQUIRE((d[0] == 0 && d[1] == 0 && d[2] == 0));
 
     d.PushBack(1);

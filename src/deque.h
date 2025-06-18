@@ -93,28 +93,27 @@ private:
     int index = 0;
 };
 
-template <class T, int bufferSize = 4096, int chunkSize = 4096>
+template <class T>
 class Deque : public IEnumerable<T> {
 public:
-    Deque() {
+    Deque(int sz = 0, int bufferSize = 4096, int chunkSize = 4096)
+        : size(sz), bufferSize(bufferSize), chunkSize(chunkSize) {
         buffer = new RingBuffer<Chunk<T>*>(bufferSize);
-    }
+        if (size > 0) {
+            int chunks = (size + chunkSize - 1) / chunkSize;
+            int lastChunkSize = size % chunkSize;
+            if (lastChunkSize == 0) {
+                lastChunkSize = chunkSize;
+            }
 
-    Deque(int sz) : size(sz) {
-        buffer = new RingBuffer<Chunk<T>*>(bufferSize);
-        int chunks = (size + chunkSize - 1) / chunkSize;
-        int lastChunkSize = size % chunkSize;
-        if (lastChunkSize == 0) {
-            lastChunkSize = chunkSize;
-        }
-
-        for (int i = 0; i < chunks; ++i) {
-            Chunk<T>* chunk = AllocateChunk();
-            buffer->PushBack(chunk);
-            if (i + 1 < chunks) {
-                chunk->Reserve(chunkSize);
-            } else {
-                chunk->Reserve(lastChunkSize);
+            for (int i = 0; i < chunks; ++i) {
+                Chunk<T>* chunk = AllocateChunk();
+                buffer->PushBack(chunk);
+                if (i + 1 < chunks) {
+                    chunk->Reserve(chunkSize);
+                } else {
+                    chunk->Reserve(lastChunkSize);
+                }
             }
         }
     }
@@ -233,6 +232,7 @@ public:
 private:
     RingBuffer<Chunk<T>*>* buffer;
     int size = 0;
+    int bufferSize = 4096, chunkSize = 4096;
     int allocatedChunks = 0;
 
     Chunk<T>* AllocateChunk() {
