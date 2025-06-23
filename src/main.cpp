@@ -49,7 +49,8 @@ int main() {
         bool err = 0;
         b = getInteger(err, 1, 100);
         if (err) {
-            std::cout << "Setting bufferSize to 5.\n";
+            std::cout << "Setting bufferSize to 3.\n";
+            b = 3;
         }
     }
     {
@@ -58,6 +59,7 @@ int main() {
         c = getInteger(err, 1, 100);
         if (err) {
             std::cout << "Setting chunkSize to 5.\n";
+            c = 5;
         }
     }
 
