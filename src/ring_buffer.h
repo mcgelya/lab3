@@ -93,6 +93,26 @@ public:
         size = sz;
     }
 
+    void Resize(int sz) {
+        if (sz < bufferSize) {
+            throw std::out_of_range("Cannot decrese size");
+        }
+        T* newBuffer = new T[sz]();
+        if (size != 0) {
+            int i = start, ind = 0;
+            do {
+                newBuffer[ind] = buffer[i];
+                i = Next(i);
+                ++ind;
+            } while (i != end);
+        }
+        start = 0;
+        end = size;
+        delete[] buffer;
+        buffer = newBuffer;
+        bufferSize = sz;
+    }
+
     int GetSize() const {
         return size;
     }
@@ -118,7 +138,9 @@ public:
         if (size == bufferSize) {
             throw std::out_of_range("Buffer is full");
         }
-        start = Prev(start);
+        if (size != 0) {  // else we can just write to start
+            start = Prev(start);
+        }
         buffer[start] = x;
         ++size;
     }
@@ -211,7 +233,7 @@ public:
 
 private:
     T* buffer;
-    const int bufferSize;
+    int bufferSize;
 
     int start = 0, end = 0;
     int size = 0;

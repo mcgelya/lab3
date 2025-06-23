@@ -12,6 +12,9 @@ template <class T>
 using Chunk = RingBuffer<T>;
 
 template <class T>
+using Map = RingBuffer<Chunk<T>*>;
+
+template <class T>
 class DequeIterator : public IEnumerator<T> {
 public:
     DequeIterator(IEnumerator<Chunk<T>*>* start, int size) : bufferIt(start), size(size) {
@@ -96,9 +99,16 @@ private:
 template <class T>
 class Deque : public IEnumerable<T> {
 public:
-    Deque(int sz = 0, int bufferSize = 4096, int chunkSize = 4096)
+    Deque(int sz = 0, int bufferSize = 2, int chunkSize = 1024)
         : size(sz), bufferSize(bufferSize), chunkSize(chunkSize) {
-        buffer = new RingBuffer<Chunk<T>*>(bufferSize);
+        if (bufferSize <= 0) {
+            throw std::out_of_range("Invalid bufferSize");
+        }
+        if (chunkSize <= 0) {
+            throw std::out_of_range("Invalid chunkSize");
+        }
+
+        buffer = new Map<T>(bufferSize);
         if (size > 0) {
             int chunks = (size + chunkSize - 1) / chunkSize;
             int lastChunkSize = size % chunkSize;
@@ -124,12 +134,16 @@ public:
 
     void PushBack(const T& x) {
         if (buffer->GetSize() == 0 || buffer->GetLast()->GetSize() == chunkSize) {
+            if (buffer->GetSize() == bufferSize) {
+                bufferSize *= 2;
+                buffer->Resize(bufferSize);
+            }
             Chunk<T>* lastChunk = buffer->GetUnsafeAfterLast();
             if (lastChunk == nullptr) {
                 lastChunk = AllocateChunk();
                 buffer->PushBack(lastChunk);
             }
-            lastChunk->PushFront(x);
+            lastChunk->PushBack(x);
             ++size;
             return;
         }
@@ -152,12 +166,16 @@ public:
 
     void PushFront(const T& x) {
         if (buffer->GetSize() == 0 || buffer->GetFirst()->GetSize() == chunkSize) {
+            if (buffer->GetSize() == bufferSize) {
+                bufferSize *= 2;
+                buffer->Resize(bufferSize);
+            }
             Chunk<T>* firstChunk = buffer->GetUnsafeBeforeFirst();
             if (firstChunk == nullptr) {
                 firstChunk = AllocateChunk();
                 buffer->PushFront(firstChunk);
             }
-            firstChunk->PushBack(x);
+            firstChunk->PushFront(x);
             ++size;
             return;
         }
@@ -229,8 +247,12 @@ public:
         }
     }
 
+    Map<T>* GetMap() {
+        return buffer;
+    }
+
 private:
-    RingBuffer<Chunk<T>*>* buffer;
+    Map<T>* buffer;
     int size = 0;
     int bufferSize = 4096, chunkSize = 4096;
     int allocatedChunks = 0;

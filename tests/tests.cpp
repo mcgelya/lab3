@@ -73,6 +73,14 @@ TEST_CASE("Test Deque with start size") {
     REQUIRE((d[0] == 1 && d[1] == 2 && d[2] == 0 && d[3] == 0 && d[4] == 0 && d[5] == 1 && d[6] == 3));
 }
 
+TEST_CASE("Test resizing map") {
+    Deque<int> d(0, 1, 2);
+    d.PushBack(1);
+    d.PushBack(2);
+    REQUIRE_NOTHROW(d.PushFront(0));
+    REQUIRE((d[0] == 0 && d[1] == 1 && d[2] == 2));
+}
+
 TEST_CASE("Stress test deque") {
     Deque<int> d(4096);
     REQUIRE(d.CountAllocatedChunks() == 1);
